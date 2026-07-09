@@ -1,23 +1,30 @@
-package com.zoomvideosdkkotlin.activities
+package com.videosdkconnectionservice.activities
 
 import android.content.Context
-import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.Button
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.textfield.TextInputEditText
-import com.zoomvideosdkkotlin.utils.ApiClient
+import com.videosdkconnectionservice.utils.ApiClient
 import com.google.android.material.textfield.TextInputLayout
 import com.google.gson.Gson
-import com.zoomvideosdkkotlin.R
+import com.videosdkconnectionservice.R
 import com.google.gson.annotations.SerializedName
+import com.videosdkconnectionservice.viewmodel.ZoomSessionViewModel
 import kotlinx.coroutines.launch
 import retrofit2.awaitResponse
 import java.io.Serializable
 import io.github.cdimascio.dotenv.dotenv
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.getValue
 
 data class JWTOptions(
     @SerializedName("sessionName") val sessionName: String,
@@ -43,25 +50,49 @@ class JoinSession : AppCompatActivity() {
 
     private val endpointURL: String = dotenv["ENDPOINT_URL"]
 
+    private val zoomSessionViewModel by viewModels<ZoomSessionViewModel>()
     private lateinit var sessionNameTextField: TextInputLayout
     private lateinit var usernameTextField: TextInputLayout
     private lateinit var passwordTextField: TextInputLayout
     private lateinit var jwtTokenTextField: TextInputLayout
     private lateinit var joinSessionButton: Button
+    private lateinit var waitingProgressBar: android.widget.ProgressBar
+    private lateinit var cancelScheduleBtn: Button
     private lateinit var sessionName: String
     private lateinit var username: String
     private lateinit var password: String
     private lateinit var jwtToken: String
+    private var recordAudioGranted: Boolean = false
+
+    private val permissions: Array<String> = arrayOf(
+        android.Manifest.permission.RECORD_AUDIO,
+    )
+    private val requestMultiplePermissionsLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissionsMap ->
+            permissionsMap.forEach { (permission, isGranted) ->
+                when (permission) {
+                    "android.permission.RECORD_AUDIO" -> recordAudioGranted = isGranted
+                }
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_join_session)
+
+        val allPermissionsGranted = permissions.all {
+            ContextCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_GRANTED
+        }
+        if (!allPermissionsGranted) requestMultiplePermissionsLauncher.launch(permissions)
+
         sessionNameTextField = findViewById(R.id.sessionNameTextField)
         usernameTextField = findViewById(R.id.usernameTextField)
         passwordTextField = findViewById(R.id.passwordTextField)
         jwtTokenTextField = findViewById(R.id.jwtTokenTextField)
         joinSessionButton = findViewById(R.id.joinsessionBtn)
+        waitingProgressBar = findViewById(R.id.waitingProgressBar)
+        cancelScheduleBtn = findViewById(R.id.cancelScheduleBtn)
         sessionName = findViewById<TextInputEditText>(R.id.sessionNameTextEditField).text.toString()
         username = findViewById<TextInputEditText>(R.id.usernameTextEditField).text.toString()
         password = findViewById<TextInputEditText>(R.id.passwordTextEditField).text.toString()
@@ -94,13 +125,19 @@ class JoinSession : AppCompatActivity() {
                 audio_webrtc_mode = 0
             )
 
+            // Show scheduled UI state and start background keepalive
+            android.widget.Toast.makeText(this, "Session Scheduled waiting for Push Notification", android.widget.Toast.LENGTH_LONG).show()
+            // hide register button and show cancel in its place
+            joinSessionButton.visibility = android.view.View.GONE
+            cancelScheduleBtn.visibility = android.view.View.VISIBLE
+            waitingProgressBar.visibility = android.view.View.VISIBLE
+            // start a foreground service to allow background processing while screen locked
+            androidx.core.content.ContextCompat.startForegroundService(this, android.content.Intent(this, com.videosdkconnectionservice.services.KeepAliveService::class.java))
+
             if (endpointURL.isEmpty()) {
                 println("JWT from local " + jwtToken)
                 val config = Config(sessionName, username, password, jwtToken)
-                val intent = Intent(context, InSession::class.java).apply {
-                    putExtra("config", config)
-                }
-                startActivity(intent)
+                zoomSessionViewModel.initZoomSDK(config)
             } else {
                 lifecycleScope.launch {
                     val response =
@@ -109,16 +146,26 @@ class JoinSession : AppCompatActivity() {
                     if (response.isSuccessful) {
                         val jwt = Gson().fromJson(response.body(), Signature::class.java)
                         val config = Config(sessionName, username, password, jwt.signature)
-                        println("JWT from server " + jwt.signature)
-                        val intent = Intent(context, InSession::class.java).apply {
-                            putExtra("config", config)
-                        }
-                        startActivity(intent)
+                        zoomSessionViewModel.initZoomSDK(config)
                     } else {
                         println("error")
                     }
                 }
             }
+        }
+
+        cancelScheduleBtn.setOnClickListener {
+            // Cancel scheduled session: clear fields, hide loader, stop keepalive
+            sessionNameTextField.editText?.setText("")
+            usernameTextField.editText?.setText("")
+            passwordTextField.editText?.setText("")
+            jwtTokenTextField.editText?.setText("")
+            waitingProgressBar.visibility = android.view.View.GONE
+            cancelScheduleBtn.visibility = android.view.View.GONE
+            // restore register button visibility
+            joinSessionButton.visibility = android.view.View.VISIBLE
+            // stop foreground service if running
+            stopService(android.content.Intent(this, com.videosdkconnectionservice.services.KeepAliveService::class.java))
         }
     }
 }
