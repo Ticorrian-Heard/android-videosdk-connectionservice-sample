@@ -20,7 +20,7 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
-            android:hint="session name"
+            android:hint="@string/session_name"
             tools:ignore="MissingConstraints">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -65,7 +65,7 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
-            android:hint="JWT Token"
+            android:hint="@string/jwt_token"
             tools:ignore="MissingConstraints">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -79,7 +79,23 @@
             android:id="@+id/joinsessionBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Join Session" />
+            android:text="@string/register_session" />
+
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/waitingProgressBar"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:visibility="gone"
+            android:layout_marginTop="12dp"
+            style="?attr/circularProgressIndicatorStyle" />
+
+        <Button
+            android:id="@+id/cancelScheduleBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/cancel"
+            android:visibility="gone"
+            android:layout_marginTop="8dp"/>
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
