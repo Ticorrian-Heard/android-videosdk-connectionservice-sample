@@ -50,7 +50,8 @@
 
         <service
             android:name=".services.KeepAliveService"
-            android:exported="false" />
+            android:exported="false"
+            android:foregroundServiceType="dataSync" />
 
         <receiver android:name=".receivers.StartCallReceiver" android:exported="true"
             android:permission="com.videosdkconnectionservice.permission.START_CALL">
