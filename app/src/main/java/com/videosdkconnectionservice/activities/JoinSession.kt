@@ -56,7 +56,7 @@ class JoinSession : AppCompatActivity() {
     private lateinit var passwordTextField: TextInputLayout
     private lateinit var jwtTokenTextField: TextInputLayout
     private lateinit var joinSessionButton: Button
-    private lateinit var waitingProgressBar: android.widget.ProgressBar
+    private lateinit var waitingText: android.widget.TextView
     private lateinit var cancelScheduleBtn: Button
     private lateinit var sessionName: String
     private lateinit var username: String
@@ -91,7 +91,7 @@ class JoinSession : AppCompatActivity() {
         passwordTextField = findViewById(R.id.passwordTextField)
         jwtTokenTextField = findViewById(R.id.jwtTokenTextField)
         joinSessionButton = findViewById(R.id.joinsessionBtn)
-        waitingProgressBar = findViewById(R.id.waitingProgressBar)
+        waitingText = findViewById(R.id.waitingText)
         cancelScheduleBtn = findViewById(R.id.cancelScheduleBtn)
         sessionName = findViewById<TextInputEditText>(R.id.sessionNameTextEditField).text.toString()
         username = findViewById<TextInputEditText>(R.id.usernameTextEditField).text.toString()
@@ -130,7 +130,7 @@ class JoinSession : AppCompatActivity() {
             // hide register button and show cancel in its place
             joinSessionButton.visibility = android.view.View.GONE
             cancelScheduleBtn.visibility = android.view.View.VISIBLE
-            waitingProgressBar.visibility = android.view.View.VISIBLE
+            waitingText.visibility = android.view.View.VISIBLE
             // start a foreground service to allow background processing while screen locked
             androidx.core.content.ContextCompat.startForegroundService(this, android.content.Intent(this, com.videosdkconnectionservice.services.KeepAliveService::class.java))
 
@@ -160,7 +160,7 @@ class JoinSession : AppCompatActivity() {
             usernameTextField.editText?.setText("")
             passwordTextField.editText?.setText("")
             jwtTokenTextField.editText?.setText("")
-            waitingProgressBar.visibility = android.view.View.GONE
+            waitingText.visibility = android.view.View.GONE
             cancelScheduleBtn.visibility = android.view.View.GONE
             // restore register button visibility
             joinSessionButton.visibility = android.view.View.VISIBLE

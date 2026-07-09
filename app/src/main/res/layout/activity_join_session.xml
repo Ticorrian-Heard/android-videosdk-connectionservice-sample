@@ -15,6 +15,14 @@
         tools:layout_editor_absoluteX="136dp"
         tools:layout_editor_absoluteY="248dp">
 
+        <TextView
+            android:id="@+id/waitingText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="waiting for push notification..."
+            android:visibility="gone"
+            android:layout_marginBottom="16dp"/>
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/sessionNameTextField"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -89,13 +97,6 @@
             android:visibility="gone"
             android:layout_marginTop="8dp"/>
 
-        <com.google.android.material.progressindicator.CircularProgressIndicator
-            android:id="@+id/waitingProgressBar"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:visibility="gone"
-            android:layout_marginTop="12dp"
-            style="?attr/circularProgressIndicatorStyle" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
