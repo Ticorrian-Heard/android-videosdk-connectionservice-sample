@@ -1,7 +1,7 @@
-package com.zoomvideosdkkotlin.utils
+package com.videosdkconnectionservice.utils
 
 import com.google.gson.JsonObject
-import com.zoomvideosdkkotlin.activities.JWTOptions
+import com.videosdkconnectionservice.activities.JWTOptions
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.Headers

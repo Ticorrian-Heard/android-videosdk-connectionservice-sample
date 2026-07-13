@@ -1,4 +1,4 @@
-package com.zoomvideosdkkotlin
+package com.videosdkconnectionservice
 
 import org.junit.Test
 

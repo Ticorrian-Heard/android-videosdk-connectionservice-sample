@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "zoomvideosdkkotlin"
+rootProject.name = "videosdkconnectionservice"
 include(":app")
  

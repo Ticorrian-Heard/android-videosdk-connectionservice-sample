@@ -1,8 +1,6 @@
-package com.zoomvideosdkkotlin.viewmodel
+package com.videosdkconnectionservice.viewmodel
 
-import android.widget.FrameLayout
 import com.tylerthrailkill.helpers.prettyprint.pp
-import com.zoomvideosdkkotlin.R
 import us.zoom.sdk.IncomingLiveStreamStatus
 import us.zoom.sdk.RealTimeMediaStreamsFailReason
 import us.zoom.sdk.RealTimeMediaStreamsStatus
@@ -25,6 +23,7 @@ import us.zoom.sdk.ZoomVideoSDKChatMessageDeleteType
 import us.zoom.sdk.ZoomVideoSDKChatPrivilegeType
 import us.zoom.sdk.ZoomVideoSDKDataType
 import us.zoom.sdk.ZoomVideoSDKDelegate
+import us.zoom.sdk.ZoomVideoSDKEmojiReactionType
 import us.zoom.sdk.ZoomVideoSDKExportFormat
 import us.zoom.sdk.ZoomVideoSDKFileTransferStatus
 import us.zoom.sdk.ZoomVideoSDKLiveStreamHelper
@@ -68,12 +67,6 @@ class EventListener(zoomViewModel: ZoomSessionViewModel) {
         override fun onSessionJoin() {
             pp("onSessionJoin")
             val state = zoomViewModel.getState()
-            val currentUsersInView = zoomViewModel.getCurrentUsersInView()
-            zoomViewModel.updateUsersInView(state.pageNumber)
-            zoomViewModel.renderView(
-                zoomViewModel.getMyself(),
-                zoomViewModel.getSelfView(returnDraggableSelfView = currentUsersInView.isNotEmpty())
-            )
             zoomViewModel.updateState( state.copy(sessionLoader = false, inSession = true))
         }
 
@@ -90,8 +83,8 @@ class EventListener(zoomViewModel: ZoomSessionViewModel) {
         }
 
         override fun onError(errorCode: Int) {
-            pp("onError")
-            pp(errorCode)
+            pp("onError: $errorCode")
+            zoomViewModel.disconnectCall()
         }
 
         override fun onUserJoin(
@@ -99,16 +92,6 @@ class EventListener(zoomViewModel: ZoomSessionViewModel) {
             userList: MutableList<ZoomVideoSDKUser>?
         ) {
             pp("onUserJoin")
-            val sdkSession: ZoomVideoSDKSession = ZoomVideoSDK.getInstance().session
-            val state = zoomViewModel.getState()
-            val remoteUsers: List<ZoomVideoSDKUser> = sdkSession.remoteUsers
-
-            zoomViewModel.updateUsersInView(state.pageNumber)
-
-            if (remoteUsers.size == 1) {
-                zoomViewModel.stopRenderSelfView(zoomViewModel.getMyself(), zoomViewModel.getSelfView(returnDraggableSelfView = false))
-                zoomViewModel.renderView(zoomViewModel.getMyself(), zoomViewModel.getSelfView(returnDraggableSelfView = true))
-            }
         }
 
         override fun onUserLeave(
@@ -116,20 +99,6 @@ class EventListener(zoomViewModel: ZoomSessionViewModel) {
             userList: MutableList<ZoomVideoSDKUser>?
         ) {
             pp("onUserLeave")
-            val sdkSession: ZoomVideoSDKSession = ZoomVideoSDK.getInstance().session
-            val remoteUsers: List<ZoomVideoSDKUser> = sdkSession.remoteUsers
-            val state = zoomViewModel.getState()
-            var page = state.pageNumber
-
-            if (page > 1 && zoomViewModel.getCurrentUsersInView().size == 1) page -= 1
-
-            zoomViewModel.resetParticipantRenders()
-            zoomViewModel.updateUsersInView(page)
-
-            if (remoteUsers.isEmpty()) {
-                zoomViewModel.stopRenderSelfView(zoomViewModel.getMyself(), zoomViewModel.getSelfView(returnDraggableSelfView = true))
-                zoomViewModel.renderView(zoomViewModel.getMyself(), zoomViewModel.getSelfView(returnDraggableSelfView = false))
-            }
         }
 
         override fun onUserVideoStatusChanged(
@@ -137,17 +106,6 @@ class EventListener(zoomViewModel: ZoomSessionViewModel) {
             userList: MutableList<ZoomVideoSDKUser>?
         ) {
             pp("onUserVideoStatusChanged")
-            val state = zoomViewModel.getState()
-            val newParticipantVideoOn = ArrayList<Boolean>()
-            val currentUser: ZoomVideoSDKUser = zoomViewModel.getMyself()
-            val user: ZoomVideoSDKUser? = userList?.get(0)
-
-            if (user != null && user.userID != currentUser.userID) {
-                zoomViewModel.getCurrentUsersInView().forEach {
-                    newParticipantVideoOn.add(it.videoCanvas.videoStatus.isOn)
-                }
-                zoomViewModel.updateState( state.copy(participantVideoOn = newParticipantVideoOn.toList()))
-            }
         }
 
         override fun onUserAudioStatusChanged(
@@ -242,6 +200,13 @@ class EventListener(zoomViewModel: ZoomSessionViewModel) {
             pp("onUserNameChanged")
         }
 
+        override fun onUserFailoverStatusChanged(
+            user: ZoomVideoSDKUser?,
+            isInFailover: Boolean
+        ) {
+            pp("onUserFailoverStatusChanged")
+        }
+
         override fun onUserActiveAudioChanged(
             audioHelper: ZoomVideoSDKAudioHelper?,
             list: MutableList<ZoomVideoSDKUser>?
@@ -290,6 +255,11 @@ class EventListener(zoomViewModel: ZoomSessionViewModel) {
         override fun onSpokenLanguageChanged(spokenLanguage: ZoomVideoSDKLiveTranscriptionHelper.ILiveTranscriptionLanguage?) {
             pp("onSpokenLanguageChanged")
         }
+
+        override fun onVoiceInterpretationReady() {
+            pp("onVoiceInterpretationReady")
+        }
+
         override fun onHostAskUnmute() {
             pp("onHostAskUnmute")
         }
@@ -549,6 +519,13 @@ class EventListener(zoomViewModel: ZoomSessionViewModel) {
 
         override fun onStreamingJoinStatusChanged(status: ZoomVideoSDKStreamingJoinStatus?) {
             pp("onStreamingJoinStatusChanged")
+        }
+
+        override fun onEmojiReactionReceived(
+            user: ZoomVideoSDKUser?,
+            type: ZoomVideoSDKEmojiReactionType?
+        ) {
+            pp("onEmojiReactionReceived")
         }
 
         override fun onUserWhiteboardShareStatusChanged(

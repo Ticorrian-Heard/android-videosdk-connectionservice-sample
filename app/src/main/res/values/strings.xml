@@ -1,3 +1,7 @@
 <resources>
-    <string name="app_name">zoomvideosdkkotlin</string>
+    <string name="app_name">videosdkconnectionservice</string>
+    <string name="cancel">Cancel</string>
+    <string name="register_session">Register Session</string>
+    <string name="session_name">session name</string>
+    <string name="jwt_token">JWT Token</string>
 </resources>

@@ -1,18 +1,18 @@
-import org.gradle.api.JavaVersion
+import com.android.build.api.dsl.ApplicationExtension
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
 }
 
-android {
-    namespace = "com.zoomvideosdkkotlin"
-    compileSdk = 35
+extensions.configure<ApplicationExtension> {
+    namespace = "com.videosdkconnectionservice"
+    compileSdk = 37
 
     defaultConfig {
-        applicationId = "com.zoomvideosdkkotlin"
-        minSdk = 31
-        targetSdk = 35
+        applicationId = "com.videosdkconnectionservice"
+        minSdk = 35
+        targetSdk = 37
         versionCode = 1
         versionName = "1.0"
 
@@ -32,8 +32,11 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    kotlinOptions {
-        jvmTarget = "17"
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_17)
     }
 }
 
@@ -47,6 +50,7 @@ dependencies {
     implementation(libs.androidx.junit.ktx)
     implementation(libs.zoomvideosdk.core)
     implementation(libs.androidx.lifecycle.runtime.android)
+    implementation("com.google.android.material:material:1.12.0")
     implementation("com.squareup.retrofit2:retrofit:2.10.0")
     implementation("com.squareup.retrofit2:converter-gson:2.10.0")
     implementation("com.tylerthrailkill.helpers:pretty-print:v2.0.8")

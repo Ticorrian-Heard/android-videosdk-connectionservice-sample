@@ -1,4 +1,4 @@
-package com.zoomvideosdkkotlin.utils;
+package com.videosdkconnectionservice.utils;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;

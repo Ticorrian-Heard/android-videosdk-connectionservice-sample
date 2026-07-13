@@ -1,4 +1,4 @@
-package com.zoomvideosdkkotlin.utils
+package com.videosdkconnectionservice.utils
 
 import io.github.cdimascio.dotenv.dotenv
 import retrofit2.Retrofit

@@ -1,6 +1,5 @@
 package com.videosdkconnectionservice.activities
 
-import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.Button
@@ -17,6 +16,7 @@ import com.google.android.material.textfield.TextInputLayout
 import com.google.gson.Gson
 import com.videosdkconnectionservice.R
 import com.google.gson.annotations.SerializedName
+import com.tylerthrailkill.helpers.prettyprint.pp
 import com.videosdkconnectionservice.viewmodel.ZoomSessionViewModel
 import kotlinx.coroutines.launch
 import retrofit2.awaitResponse
@@ -42,12 +42,10 @@ data class Signature(val signature: String)
 data class Config(val sessionName: String, val userName: String, val password: String?, val jwt: String ): Serializable
 
 class JoinSession : AppCompatActivity() {
-    val context: Context = this
     private val dotenv = dotenv {
         directory = "/assets"
         filename = "env"
     }
-
     private val endpointURL: String = dotenv["ENDPOINT_URL"]
 
     private val zoomSessionViewModel by viewModels<ZoomSessionViewModel>()
@@ -63,15 +61,18 @@ class JoinSession : AppCompatActivity() {
     private lateinit var password: String
     private lateinit var jwtToken: String
     private var recordAudioGranted: Boolean = false
+    private var postNotificationsGranted: Boolean = false
 
     private val permissions: Array<String> = arrayOf(
         android.Manifest.permission.RECORD_AUDIO,
+        android.Manifest.permission.POST_NOTIFICATIONS
     )
     private val requestMultiplePermissionsLauncher =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissionsMap ->
             permissionsMap.forEach { (permission, isGranted) ->
                 when (permission) {
                     "android.permission.RECORD_AUDIO" -> recordAudioGranted = isGranted
+                    "android.permission.POST_NOTIFICATIONS" -> postNotificationsGranted = isGranted
                 }
             }
         }
@@ -125,26 +126,27 @@ class JoinSession : AppCompatActivity() {
                 audio_webrtc_mode = 0
             )
 
-            // Show scheduled UI state and start background keepalive
             android.widget.Toast.makeText(this, "Session Scheduled waiting for Push Notification", android.widget.Toast.LENGTH_LONG).show()
-            // hide register button and show cancel in its place
             joinSessionButton.visibility = android.view.View.GONE
             cancelScheduleBtn.visibility = android.view.View.VISIBLE
             waitingText.visibility = android.view.View.VISIBLE
+
             // start a foreground service to allow background processing while screen locked
-            androidx.core.content.ContextCompat.startForegroundService(this, android.content.Intent(this, com.videosdkconnectionservice.services.KeepAliveService::class.java))
+            ContextCompat.startForegroundService(this, android.content.Intent(this, com.videosdkconnectionservice.services.KeepAliveService::class.java))
 
             if (endpointURL.isEmpty()) {
-                println("JWT from local " + jwtToken)
+                println("Fetching JWT from locally")
                 val config = Config(sessionName, username, password, jwtToken)
                 zoomSessionViewModel.initZoomSDK(config)
             } else {
+                pp("Requesting JWT from server")
                 lifecycleScope.launch {
                     val response =
                         ApiClient.apiService.getJWT(sessionName, username, password, body)
                             .awaitResponse()
                     if (response.isSuccessful) {
                         val jwt = Gson().fromJson(response.body(), Signature::class.java)
+                        pp("jwt from server: ${jwt.signature}")
                         val config = Config(sessionName, username, password, jwt.signature)
                         zoomSessionViewModel.initZoomSDK(config)
                     } else {

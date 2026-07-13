@@ -14,33 +14,11 @@ Use of this Sample App is subject to our [Terms of Use](https://www.zoom.com/en/
   - compileSdk: API 37
 - **Android Studio** (latest stable)
 - **Gradle** (included via Gradle wrapper)
+- **ADB CLI Tool**
 
 ### Zoom Video SDK
 - Zoom Video SDK Core dependency
-- SDK Key and SDK Secret from Zoom
-
-### Core Dependencies (from build.gradle.kts)
-- AndroidX: core-ktx, appcompat, activity, constraintlayout, lifecycle, monitor, junit.ktx
-- Google Material: 1.12.0
-- Retrofit2: 2.10.0 (HTTP client)
-- Gson: JSON serialization
-- JJWT: 0.12.6 (JWT token generation/validation)
-- Kotlin Coroutines: 1.5.2
-- Dotenv: 6.5.1 (environment configuration)
-- Pretty-print: v2.0.8 (logging utility)
-- Flexbox: 3.0.0 (layout)
-
-### Required Permissions (Auto-declared in AndroidManifest.xml)
-- `INTERNET` - Network access
-- `RECORD_AUDIO` - Microphone for calls
-- `FOREGROUND_SERVICE` - Background service execution
-- `FOREGROUND_SERVICE_DATA_SYNC` - KeepAliveService
-- `READ_PHONE_STATE` - Call state monitoring
-- `READ_CALL_LOG` - Call history
-- `POST_NOTIFICATIONS` - Push notifications
-- `BIND_TELECOM_CONNECTION_SERVICE` - Phone integration
-- `MANAGE_OWN_CALLS` - Call management
-- `RECEIVE_BOOT_COMPLETED` - Boot completion events
+- Video SDK Key and Secret from Zoom
 
 ### Device Requirements
 - Android device or emulator running Android 15+ (API 35+)
@@ -91,4 +69,14 @@ curl --location --request POST 'http://ENDPOINT_URL/zoomtoken?token=&name=&passw
 ```
 
 ## Usage
-After entering either a JWTToken or Endpoint URL and configuring your Endpoint,  you can start the Sample App by clicking Build and Run!
+1. Once your app is built, run it in Android Studio
+
+2. Enter the sessionName and Username in the UI form. Optionally, you can enter password if needed. If you specified an ``ENDPOINT_URL`` in the `env` file, the app will query your endpoint to retrieve a JWT token. If you did not specify an ``ENDPOINT_URL`` in the `env` file, you can leave the JWT Token field blank.
+
+3. Click "Register Session" and the app will initialize and listen for a push notification to trigger the call flow
+
+4. open the terminal and run this command to send a push notification to your app:
+
+`adb shell am broadcast -a com.videosdkconnectionservice.ACTION_START_CALL -n com.videosdkconnectionservice/com.videosdkconnectionservice.receivers.StartCallReceiver`
+
+5. Your app should now receive a call via the android call UI. From there, you can answer and the Zoom Session will start. 
