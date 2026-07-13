@@ -1,4 +1,4 @@
-# Video SDK Android Quickstart 
+# Video SDK ConnectionService Sample
 
 This is a Sample App of the Android Zoom Video SDK built with Kotlin.  
 
