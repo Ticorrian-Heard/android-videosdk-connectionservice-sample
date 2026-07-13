@@ -1,7 +1,6 @@
 # Video SDK Android Quickstart 
 
-This is a Sample App of the Android Zoom Video SDK built with Kotlin. With the use of this app, developers can quickly start
-their Zoom Video SDK projects, integrate the SDK into their projects, or use as reference for best coding practices for our Android Video SDK. 
+This is a Sample App of the Android Zoom Video SDK built with Kotlin.  
 
 Use of this Sample App is subject to our [Terms of Use](https://www.zoom.com/en/trust/terms/).
 
@@ -9,8 +8,38 @@ Use of this Sample App is subject to our [Terms of Use](https://www.zoom.com/en/
 
 Clone this repo into your local environment:
 ```
-$ git clone https://github.com/zoom/videosdk-android-kotlin-quickstart.git
+$ git clone https://github.com/Ticorrian-Heard/android-videosdk-connectionservice-sample.git 
 ```
+
+## Prerequisites
+
+### System Requirements
+- **JDK 17+** (required)
+- **Android SDK:** API Level 35 (minSdk) and 37 (compileSdk/targetSdk)
+- **Android Studio** (latest stable)
+
+### Zoom Video SDK
+- Obtain SDK Key and SDK Secret from Zoom
+
+### Required Permissions (Auto-declared)
+- `android.permission.INTERNET`
+- `android.permission.RECORD_AUDIO`
+- `android.permission.FOREGROUND_SERVICE`
+- `android.permission.FOREGROUND_SERVICE_DATA_SYNC`
+- `android.permission.READ_PHONE_STATE`
+- `android.permission.READ_CALL_LOG`
+- `android.permission.POST_NOTIFICATIONS`
+- `android.permission.BIND_TELECOM_CONNECTION_SERVICE`
+- `android.permission.MANAGE_OWN_CALLS`
+
+### Key Dependencies (from build.gradle.kts)
+- Zoom Video SDK Core
+- Retrofit 2.10.0 (HTTP client)
+- JJWT 0.12.6 (JWT token generation)
+- Kotlin Coroutines
+- AndroidX libraries (lifecycle, appcompat, constraintlayout, material)
+
+## Installation
 
 Once cloned, navigate to the 'videosdk-android-quickstart' directory
 
