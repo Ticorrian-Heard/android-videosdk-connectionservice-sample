@@ -4,42 +4,54 @@ This is a Sample App of the Android Zoom Video SDK built with Kotlin.
 
 Use of this Sample App is subject to our [Terms of Use](https://www.zoom.com/en/trust/terms/).
 
+## Prerequisites
+
+### System Requirements
+- **JDK 17** (required by build.gradle.kts)
+- **Android SDK:**
+  - minSdk: API 35 (Android 15)
+  - targetSdk: API 37 (Android 15)
+  - compileSdk: API 37
+- **Android Studio** (latest stable)
+- **Gradle** (included via Gradle wrapper)
+
+### Zoom Video SDK
+- Zoom Video SDK Core dependency
+- SDK Key and SDK Secret from Zoom
+
+### Core Dependencies (from build.gradle.kts)
+- AndroidX: core-ktx, appcompat, activity, constraintlayout, lifecycle, monitor, junit.ktx
+- Google Material: 1.12.0
+- Retrofit2: 2.10.0 (HTTP client)
+- Gson: JSON serialization
+- JJWT: 0.12.6 (JWT token generation/validation)
+- Kotlin Coroutines: 1.5.2
+- Dotenv: 6.5.1 (environment configuration)
+- Pretty-print: v2.0.8 (logging utility)
+- Flexbox: 3.0.0 (layout)
+
+### Required Permissions (Auto-declared in AndroidManifest.xml)
+- `INTERNET` - Network access
+- `RECORD_AUDIO` - Microphone for calls
+- `FOREGROUND_SERVICE` - Background service execution
+- `FOREGROUND_SERVICE_DATA_SYNC` - KeepAliveService
+- `READ_PHONE_STATE` - Call state monitoring
+- `READ_CALL_LOG` - Call history
+- `POST_NOTIFICATIONS` - Push notifications
+- `BIND_TELECOM_CONNECTION_SERVICE` - Phone integration
+- `MANAGE_OWN_CALLS` - Call management
+- `RECEIVE_BOOT_COMPLETED` - Boot completion events
+
+### Device Requirements
+- Android device or emulator running Android 15+ (API 35+)
+- Microphone access (runtime permission requested)
+
 ## Installation
 
 Clone this repo into your local environment:
 ```
 $ git clone https://github.com/Ticorrian-Heard/android-videosdk-connectionservice-sample.git 
 ```
-
-## Prerequisites
-
-### System Requirements
-- **JDK 17+** (required)
-- **Android SDK:** API Level 35 (minSdk) and 37 (compileSdk/targetSdk)
-- **Android Studio** (latest stable)
-
-### Zoom Video SDK
-- Obtain SDK Key and SDK Secret from Zoom
-
-### Required Permissions (Auto-declared)
-- `android.permission.INTERNET`
-- `android.permission.RECORD_AUDIO`
-- `android.permission.FOREGROUND_SERVICE`
-- `android.permission.FOREGROUND_SERVICE_DATA_SYNC`
-- `android.permission.READ_PHONE_STATE`
-- `android.permission.READ_CALL_LOG`
-- `android.permission.POST_NOTIFICATIONS`
-- `android.permission.BIND_TELECOM_CONNECTION_SERVICE`
-- `android.permission.MANAGE_OWN_CALLS`
-
-### Key Dependencies (from build.gradle.kts)
-- Zoom Video SDK Core
-- Retrofit 2.10.0 (HTTP client)
-- JJWT 0.12.6 (JWT token generation)
-- Kotlin Coroutines
-- AndroidX libraries (lifecycle, appcompat, constraintlayout, material)
-
-## Installation
 
 Once cloned, navigate to the 'videosdk-android-quickstart' directory
 
