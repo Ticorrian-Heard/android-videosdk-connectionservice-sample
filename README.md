@@ -73,7 +73,7 @@ curl --location --request POST 'http://ENDPOINT_URL/zoomtoken?token=&name=&passw
 
 2. Enter the sessionName and Username in the UI form. Optionally, you can enter password if needed. If you specified an ``ENDPOINT_URL`` in the `env` file, the app will query your endpoint to retrieve a JWT token. If you did not specify an ``ENDPOINT_URL`` in the `env` file, you can leave the JWT Token field blank.
 
-3. Click "Register Session" and the app will initialize and listen for a push notification to trigger the call flow
+3. Click "Register Session" and the app will initialize and listen for a push notification to trigger the call flow. Also go to the Phone App > Settings > Calls > Calling Accounts and enable the `My VoIP App` to receive calls.
 
 4. open the terminal and run this command to send a push notification to your app:
 
